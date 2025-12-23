@@ -5,26 +5,37 @@
 <title>魔法元素集點</title>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <style>
-  body { font-family: Arial, sans-serif; padding: 20px; line-height: 1.5; text-align:center; }
-  h1 { color: #333; }
-  p { margin: 10px 0; }
-  button { padding: 12px 20px; font-size: 16px; margin-top: 20px; cursor: pointer; background-color: #ff9800; border: none; border-radius: 5px; color: #fff; }
-  button:hover { background-color: #e68900; }
-  button:disabled { background-color: #ccc; cursor: not-allowed; }
-  #message { margin-top: 20px; font-weight: bold; color: #007bff; white-space: pre-wrap; }
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f9f9f9;
+}
+.container {
+  max-width: 360px;
+  padding: 24px;
+  text-align: center;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+#message { margin-top: 20px; font-weight: bold; color: #007bff; white-space: pre-wrap; }
 </style>
 </head>
 <body>
 
-<h1 id="taskTitle">魔法元素任務</h1>
-<p id="taskDesc">任務說明文字</p>
-<button id="claimPoint">領取點數1</button>
-<div id="message"></div>
+<div class="container">
+    <h1 id="taskTitle">魔法元素任務</h1>
+    <p id="taskDesc">任務說明文字</p>
+    <div id="message">掃描 NFC 中...</div>
+</div>
 
 <script>
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw7E-dJkClxmgU9EN9DqFBzhdRdk6KAqAQTB1bMpXcUva9G8LOnDPPEOhyn-1VQBfxW/exec"; // 改成你的 Web App URL
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby5L0P1HnkNXf2HU7rOQaRi2k5ChBVjjidpLs9ygUY-3868V3XQXBrezOXO4uzQsvbM/exec"
 
-// 每個站點對應的魔法元素內容
 const tasks = {
   "01": { title: "第一站🟠 橘色｜活力能量", desc: "恭喜你獲得了【活力能量】..." },
   "02": { title: "第二站⚫ 黑色｜節能之力", desc: "恭喜你獲得了【節能之力】..." },
@@ -39,47 +50,36 @@ const tasks = {
 
 // 取得 URL 參數
 const urlParams = new URLSearchParams(window.location.search);
-const station = urlParams.get('station'); // e.g., 01~09
+const station = urlParams.get('station');
 
-const btn = document.getElementById("claimPoint");
-const message = document.getElementById("message");
-
-// 檢查站點是否存在
-if (tasks[station]) {
-  document.getElementById("taskTitle").innerText = tasks[station].title;
-  document.getElementById("taskDesc").innerText = tasks[station].desc;
-} else {
+if (!tasks[station]) {
   document.getElementById("taskTitle").innerText = "感應錯誤";
   document.getElementById("taskDesc").innerText = "請確認掃描的 NFC 是否正確。";
-  btn.style.display = "none";
-  btn.disabled = true;
+  document.getElementById("message").innerText = "";
+} else {
+  document.getElementById("taskTitle").innerText = tasks[station].title;
+  document.getElementById("taskDesc").innerText = tasks[station].desc;
 }
 
 // LIFF 初始化
 liff.init({ liffId: "2008718308-nx2rhV48" })
-.then(() => {
-  return liff.getProfile();
-})
+.then(() => liff.getProfile())
 .then(profile => {
   const userId = profile.userId;
 
-  btn.addEventListener("click", () => {
-    fetch(`${WEB_APP_URL}?lineId=${userId}&station=${station}`)
-      .then(res => res.text())
-      .then(msg => {
-        // 顯示 Apps Script 回傳訊息
-        message.innerText = msg;
-      })
-      .catch(err => {
-        message.innerText = "系統錯誤，請稍後再試";
-        console.error(err);
-      });
-  });
+  // 直接自動領取點數，不用按按鈕
+  fetch(`${WEB_APP_URL}?lineId=${userId}&station=${station}`)
+    .then(res => res.text())
+    .then(msg => {
+      document.getElementById("message").innerText = msg;
+    })
+    .catch(err => {
+      document.getElementById("message").innerText = "系統錯誤，請稍後再試";
+      console.error(err);
+    });
 })
 .catch(err => {
-  message.innerText = "";
-  btn.style.display = "none";
-  btn.disabled = true;
+  document.getElementById("message").innerText = "無法取得 LINE 使用者資訊";
   console.error(err);
 });
 </script>
