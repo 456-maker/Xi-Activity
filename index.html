@@ -15,17 +15,25 @@ body {
   background: #f9f9f9;
 }
 .container {
-  max-width: 360px;
-  padding: 24px;
+  width: 90%;       /* 放大寬度，接近全螢幕 */
+  max-width: 500px;  /* 最大寬度限制 */
+  padding: 36px;    /* 增加內距，讓內容更大 */
   text-align: center;
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
+h1 {
+  font-size: 1.8em; /* 標題放大 */
+}
+p {
+  font-size: 1.2em; /* 說明文字放大 */
+}
 #message {
-  margin-top: 20px;
+  margin-top: 24px;
   font-weight: bold;
   color: #007bff;
+  font-size: 1.3em;  /* 訊息文字放大 */
   white-space: pre-wrap;
 }
 </style>
@@ -73,9 +81,11 @@ if (!tasks[station]) {
 async function main() {
   await liff.init({ liffId: LIFF_ID });
 
-  // 🔥 關鍵：強制 OAuth
+  // 🔥 強制 OAuth 並帶回原網址
   if (!liff.isLoggedIn()) {
-    liff.login();
+    liff.login({
+      redirectUri: window.location.href
+    });
     return;
   }
 
