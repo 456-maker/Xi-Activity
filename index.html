@@ -56,7 +56,7 @@ h1 {
 <body>
 
 <div class="container">
-  <h1>魔法元素任務</h1>
+  <h1 id="taskTitle">魔法元素任務</h1>
 
   <div id="message">感應中，請稍候…</div>
 
@@ -71,6 +71,8 @@ const WEB_APP_URL =
   "https://script.google.com/macros/s/AKfycbz71G_Vjp_j0YTC5wQCHPIr5Jpkg7tnKArrk2w40XFZPaczBJYPrjPgjSFUW5bIAJbJ/exec";
 
 const LIFF_ID = "2008718308-nx2rhV48";
+
+const tasks = { "01": { title: "第一站🟠 橘色｜活力能量", desc: "恭喜你獲得了【活力能量】..." }, "02": { title: "第二站⚫ 黑色｜節能之力", desc: "恭喜你獲得了【節能之力】..." }, "03": { title: "第三站🟢 綠色｜森林守護", desc: "恭喜你獲得了【森林守護】..." }, "04": { title: "第四站🔵 淺藍色｜清泉祝福", desc: "恭喜你獲得了【清泉祝福】..." }, "05": { title: "第五站🟣 紫色｜智慧魔法", desc: "恭喜你獲得了【智慧魔法】..." }, "06": { title: "第六站🟤 棕色｜大地之根", desc: "恭喜你獲得了【大地之根】..." }, "07": { title: "第七站🔵 深藍色｜海洋之力", desc: "恭喜你獲得了【海洋之力】..." }, "08": { title: "第八站🔴 紅色｜溫暖之心", desc: "恭喜你獲得了【溫暖之心】..." }, "09": { title: "第九站🟡 黃色｜陽光魔法", desc: "恭喜你獲得了【陽光魔法】..." } };
 
 const station = new URLSearchParams(window.location.search).get("station");
 
