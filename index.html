@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>魔法元素集點</title>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
 <style>
 body {
   font-family: Arial, sans-serif;
@@ -14,36 +15,52 @@ body {
   align-items: center;
   background: #f9f9f9;
 }
+
+/* ✅ 中央窗格大幅放大 */
 .container {
-  width: 90%;       /* 放大寬度，接近全螢幕 */
-  max-width: 500px;  /* 最大寬度限制 */
-  padding: 36px;    /* 增加內距，讓內容更大 */
+  width: 95%;
+  max-width: 680px;          /* 原 500 → 放大 */
+  padding: 56px;             /* 原 36 → 放大 */
   text-align: center;
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-radius: 18px;       /* 圓角同步放大 */
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
 }
+
+/* ✅ 字體全面放大 */
 h1 {
-  font-size: 1.8em; /* 標題放大 */
+  font-size: 2.3em;
+  margin-bottom: 24px;
 }
+
 p {
-  font-size: 1.2em; /* 說明文字放大 */
+  font-size: 1.7em;
+  line-height: 1.6;
 }
+
 #message {
-  margin-top: 24px;
+  margin-top: 32px;
   font-weight: bold;
   color: #007bff;
-  font-size: 1.3em;  /* 訊息文字放大 */
+  font-size: 1.8em;
   white-space: pre-wrap;
+}
+
+#hint {
+  margin-top: 20px;
+  font-size: 1.25em;
+  color: #999;
 }
 </style>
 </head>
+
 <body>
 
 <div class="container">
   <h1 id="taskTitle">魔法元素任務</h1>
   <p id="taskDesc">任務說明文字</p>
   <div id="message">驗證中，請稍候...</div>
+  <div id="hint"></div>
 </div>
 
 <script>
@@ -64,7 +81,6 @@ const tasks = {
   "09": { title: "第九站🟡 黃色｜陽光魔法", desc: "恭喜你獲得了【陽光魔法】..." }
 };
 
-// 取得 station
 const urlParams = new URLSearchParams(window.location.search);
 const station = urlParams.get("station");
 
@@ -77,30 +93,34 @@ if (!tasks[station]) {
   document.getElementById("taskDesc").innerText = tasks[station].desc;
 }
 
-// ⭐⭐⭐ 正確 LIFF 流程 ⭐⭐⭐
 async function main() {
-  await liff.init({ liffId: LIFF_ID });
+  try {
+    await liff.init({ liffId: LIFF_ID });
 
-  // 🔥 強制 OAuth 並帶回原網址
-  if (!liff.isLoggedIn()) {
-    liff.login({
-      redirectUri: window.location.href
-    });
-    return;
+    if (!liff.isLoggedIn()) {
+      liff.login({ redirectUri: window.location.href });
+      return;
+    }
+
+    const profile = await liff.getProfile();
+    const userId = profile.userId;
+
+    const res = await fetch(
+      `${WEB_APP_URL}?lineId=${encodeURIComponent(userId)}&station=${encodeURIComponent(station)}`
+    );
+    const msg = await res.text();
+
+    document.getElementById("message").innerText = msg;
+    document.getElementById("hint").innerText = "3 秒後將自動返回 LINE 聊天室…";
+
+    setTimeout(() => {
+      liff.closeWindow();
+    }, 3000);
+
+  } catch (err) {
+    document.getElementById("message").innerText = "系統錯誤，請重新操作";
+    console.error(err);
   }
-
-  const profile = await liff.getProfile();
-  const userId = profile.userId;
-
-  fetch(`${WEB_APP_URL}?lineId=${encodeURIComponent(userId)}&station=${encodeURIComponent(station)}`)
-    .then(res => res.text())
-    .then(msg => {
-      document.getElementById("message").innerText = msg;
-    })
-    .catch(err => {
-      document.getElementById("message").innerText = "系統錯誤，請稍後再試";
-      console.error(err);
-    });
 }
 
 main();
