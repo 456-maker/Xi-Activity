@@ -126,10 +126,6 @@ async function main() {
 
     document.getElementById("message").innerText = msg;
 
-    setTimeout(() => {
-      liff.closeWindow();
-    }, 3000);
-
   } catch (err) {
     document.getElementById("message").innerText = "系統錯誤，請重新操作";
     console.error(err);
