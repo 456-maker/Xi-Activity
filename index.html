@@ -46,11 +46,23 @@ p {
   white-space: pre-wrap;
 }
 
-#hint {
-  margin-top: 20px;
-  font-size: 1.25em;
-  color: #999;
+.back-box {
+  margin-top: 36px;
+  padding: 18px 12px;
+  background-color: #f5c400; /* 黃底 */
+  color: #ffffff;            /* 白字 */
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: center;
+  font-size: 1.4em;
+  font-weight: bold;
+  line-height: 1.4;
 }
+
+.back-box:hover {
+  opacity: 0.9;
+}
+
 </style>
 </head>
 
@@ -60,7 +72,9 @@ p {
   <h1 id="taskTitle">魔法元素任務</h1>
   <p id="taskDesc">任務說明文字</p>
   <div id="message">驗證中，請稍候...</div>
-  <div id="hint"></div>
+  <div id="backToLine" class="back-box">
+  <div>請點擊</div>
+  <div>看看守護者說了什麼！</div>
 </div>
 
 <script>
@@ -111,7 +125,6 @@ async function main() {
     const msg = await res.text();
 
     document.getElementById("message").innerText = msg;
-    document.getElementById("hint").innerText = "3 秒後將自動返回 LINE 聊天室…";
 
     setTimeout(() => {
       liff.closeWindow();
