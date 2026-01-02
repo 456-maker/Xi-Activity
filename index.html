@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>魔法元素集點</title>
-<script src="https://script.google.com/macros/s/AKfycbxoy86YMjus8g5lX-ZMjt7M59lftqQOu3g_yFP7Ky5gP6bN9-VEfag5QsdYKoMF0xO0/exec"></script>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
 <style>
 body {
@@ -16,16 +16,18 @@ body {
   background: #f9f9f9;
 }
 
+/* ✅ 中央窗格大幅放大 */
 .container {
   width: 95%;
-  max-width: 680px;
-  padding: 56px;
+  max-width: 680px;          /* 原 500 → 放大 */
+  padding: 56px;             /* 原 36 → 放大 */
   text-align: center;
   background: #fff;
-  border-radius: 18px;
+  border-radius: 18px;       /* 圓角同步放大 */
   box-shadow: 0 8px 24px rgba(0,0,0,0.15);
 }
 
+/* ✅ 字體全面放大 */
 h1 {
   font-size: 2.3em;
   margin-bottom: 24px;
@@ -36,15 +38,18 @@ p {
   line-height: 1.6;
 }
 
-#yellowBox {
+#message {
   margin-top: 32px;
-  background: #f6c945;
-  color: #fff;
-  padding: 20px;
-  border-radius: 14px;
-  font-size: 1.4em;
   font-weight: bold;
-  cursor: pointer;
+  color: #007bff;
+  font-size: 1.8em;
+  white-space: pre-wrap;
+}
+
+#hint {
+  margin-top: 20px;
+  font-size: 1.25em;
+  color: #999;
 }
 </style>
 </head>
@@ -52,20 +57,73 @@ p {
 <body>
 
 <div class="container">
-  <h1>魔法元素任務</h1>
-  <p>感應成功！請查看 LINE 守護者的訊息</p>
-
-  <div
-    id="yellowBox"
-    onclick="location.href='line://ti/p/@292qgspw'">
-    <div>請點擊</div>
-    <div>看看守護者說了什麼</div>
-  </div>
+  <h1 id="taskTitle">魔法元素任務</h1>
+  <p id="taskDesc">任務說明文字</p>
+  <div id="message">驗證中，請稍候...</div>
+  <div id="hint"></div>
 </div>
 
 <script>
+const WEB_APP_URL =
+  "https://script.google.com/macros/s/AKfycbxqYH632pcG0nSDmgDjrPRHI7uzZqZ2iwjUSN69_SDcHG6Jf1DCjnnEjZfsdOPph6gv/exec";
+
 const LIFF_ID = "2008718308-nx2rhV48";
-liff.init({ liffId: LIFF_ID });
+
+const tasks = {
+  "01": { title: "第一站🟠 橘色｜活力能量", desc: "恭喜你獲得了【活力能量】..." },
+  "02": { title: "第二站⚫ 黑色｜節能之力", desc: "恭喜你獲得了【節能之力】..." },
+  "03": { title: "第三站🟢 綠色｜森林守護", desc: "恭喜你獲得了【森林守護】..." },
+  "04": { title: "第四站🔵 淺藍色｜清泉祝福", desc: "恭喜你獲得了【清泉祝福】..." },
+  "05": { title: "第五站🟣 紫色｜智慧魔法", desc: "恭喜你獲得了【智慧魔法】..." },
+  "06": { title: "第六站🟤 棕色｜大地之根", desc: "恭喜你獲得了【大地之根】..." },
+  "07": { title: "第七站🔵 深藍色｜海洋之力", desc: "恭喜你獲得了【海洋之力】..." },
+  "08": { title: "第八站🔴 紅色｜溫暖之心", desc: "恭喜你獲得了【溫暖之心】..." },
+  "09": { title: "第九站🟡 黃色｜陽光魔法", desc: "恭喜你獲得了【陽光魔法】..." }
+};
+
+const urlParams = new URLSearchParams(window.location.search);
+const station = urlParams.get("station");
+
+if (!tasks[station]) {
+  document.getElementById("taskTitle").innerText = "感應錯誤";
+  document.getElementById("taskDesc").innerText = "請確認掃描的 NFC 是否正確。";
+  document.getElementById("message").innerText = "";
+} else {
+  document.getElementById("taskTitle").innerText = tasks[station].title;
+  document.getElementById("taskDesc").innerText = tasks[station].desc;
+}
+
+async function main() {
+  try {
+    await liff.init({ liffId: LIFF_ID });
+
+    if (!liff.isLoggedIn()) {
+      liff.login({ redirectUri: window.location.href });
+      return;
+    }
+
+    const profile = await liff.getProfile();
+    const userId = profile.userId;
+
+    const res = await fetch(
+      `${WEB_APP_URL}?lineId=${encodeURIComponent(userId)}&station=${encodeURIComponent(station)}`
+    );
+    const msg = await res.text();
+
+    document.getElementById("message").innerText = msg;
+    document.getElementById("hint").innerText = "3 秒後將自動返回 LINE 聊天室…";
+
+    setTimeout(() => {
+      liff.closeWindow();
+    }, 3000);
+
+  } catch (err) {
+    document.getElementById("message").innerText = "系統錯誤，請重新操作";
+    console.error(err);
+  }
+}
+
+main();
 </script>
 
 </body>
