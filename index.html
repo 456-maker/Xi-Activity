@@ -98,15 +98,6 @@ const tasks = {
 const urlParams = new URLSearchParams(window.location.search);
 const station = urlParams.get("station");
 
-if (!tasks[station]) {
-  document.getElementById("taskTitle").innerText = "感應錯誤";
-  document.getElementById("taskDesc").innerText = "請確認掃描的 NFC 是否正確。";
-  document.getElementById("message").innerText = "";
-} else {
-  document.getElementById("taskTitle").innerText = tasks[station].title;
-  document.getElementById("taskDesc").innerText = tasks[station].desc;
-}
-
 async function main() {
   try {
     await liff.init({ liffId: LIFF_ID });
@@ -123,8 +114,8 @@ async function main() {
       `${WEB_APP_URL}?lineId=${encodeURIComponent(userId)}&station=${encodeURIComponent(station)}`
     );
     const msg = await res.text();
-document.getElementById("backToLine").addEventListener("click", () => {
-  if (liff.isInClient()) {
+   document.getElementById("backToLine").addEventListener("click", () => {
+   if (liff.isInClient()) {
     liff.closeWindow(); // ✅ 回到 LINE OA 聊天室
   } else {
     // 若不是在 LINE 裡打開（例如用瀏覽器）
