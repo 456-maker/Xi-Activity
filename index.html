@@ -125,7 +125,7 @@ async function main() {
     const msg = await res.text();
 
     document.getElementById("message").innerText = msg;
-    
+
     document.getElementById("backToLine").addEventListener("click", () => {
   if (liff.isInClient()) {
     liff.closeWindow(); // ✅ 回到 LINE OA 聊天室
