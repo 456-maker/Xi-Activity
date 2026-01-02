@@ -28,27 +28,26 @@ body {
 
 h1 {
   font-size: 2.3em;
-  margin-bottom: 24px;
+  margin-bottom: 10px;
+}
+
+#plantName {
+  font-size: 1.4em;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+p {
+  font-size: 1.7em;
+  line-height: 1.6;
 }
 
 #message {
   margin-top: 32px;
   font-weight: bold;
+  color: #007bff;
   font-size: 1.8em;
-  color: #333;
-}
-
-#backBtn {
-  margin-top: 28px;
-  background: #F6C945;
-  color: #fff;
-  padding: 20px;
-  border-radius: 14px;
-  font-size: 18px;
-  font-weight: bold;
-  cursor: pointer;
-  line-height: 1.5;
-  display: none;
+  white-space: pre-wrap;
 }
 </style>
 </head>
@@ -56,50 +55,57 @@ h1 {
 <body>
 
 <div class="container">
-  <h1>魔法元素任務</h1>
-
-  <div id="message">感應中，請稍候…</div>
-
-  <div id="backBtn" onclick="liff.closeWindow()">
-    <div>請點擊</div>
-    <div>看看守護者說了什麼</div>
-  </div>
+  <h1 id="taskTitle">魔法元素任務</h1>
+  <div id="plantName"></div>
+  <p id="taskDesc">任務說明文字</p>
+  <div id="message">感應中，請稍候...</div>
 </div>
 
 <script>
-const WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbz71G_Vjp_j0YTC5wQCHPIr5Jpkg7tnKArrk2w40XFZPaczBJYPrjPgjSFUW5bIAJbJ/exec";
-
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz71G_Vjp_j0YTC5wQCHPIr5Jpkg7tnKArrk2w40XFZPaczBJYPrjPgjSFUW5bIAJbJ/exec";
 const LIFF_ID = "2008718308-nx2rhV48";
 
+const tasks = {
+  "01": { title: "第一站🟠 橘色｜活力能量", plant: "大鄧伯花", desc: "恭喜你獲得了【活力能量】" },
+  "02": { title: "第二站⚫ 黑色｜節能之力", plant: "雞蛋花", desc: "恭喜你獲得了【節能之力】" },
+  "03": { title: "第三站🟢 綠色｜森林守護", plant: "刺蔥", desc: "恭喜你獲得了【森林守護】" },
+  "04": { title: "第四站🔵 淺藍色｜清泉祝福", plant: "神秘果", desc: "恭喜你獲得了【清泉祝福】" },
+  "05": { title: "第五站🟣 紫色｜智慧魔法", plant: "金新木薑子", desc: "恭喜你獲得了【智慧魔法】" },
+  "06": { title: "第六站🟤 棕色｜大地之根", plant: "肉桂", desc: "恭喜你獲得了【大地之根】" },
+  "07": { title: "第七站🔵 深藍色｜海洋之力", plant: "菩提樹", desc: "恭喜你獲得了【海洋之力】" },
+  "08": { title: "第八站🔴 紅色｜溫暖之心", plant: "龍舌蘭", desc: "恭喜你獲得了【溫暖之心】" },
+  "09": { title: "第九站🟡 黃色｜陽光魔法", plant: "朱槿", desc: "恭喜你獲得了【陽光魔法】" }
+};
+
 const station = new URLSearchParams(window.location.search).get("station");
+
+if (!tasks[station]) {
+  document.getElementById("taskTitle").innerText = "感應錯誤";
+  document.getElementById("taskDesc").innerText = "請確認 NFC 是否正確";
+} else {
+  document.getElementById("taskTitle").innerText = tasks[station].title;
+  document.getElementById("plantName").innerText = `【${tasks[station].plant}】`;
+  document.getElementById("taskDesc").innerText = tasks[station].desc;
+}
 
 async function main() {
   try {
     await liff.init({ liffId: LIFF_ID });
-
     if (!liff.isLoggedIn()) {
-      liff.login({ redirectUri: window.location.href });
+      liff.login({ redirectUri: location.href });
       return;
     }
 
-    const profile = await liff.getProfile();
-    const userId = profile.userId;
+    const userId = (await liff.getProfile()).userId;
+    const res = await fetch(`${WEB_APP_URL}?lineId=${userId}&station=${station}`);
+    document.getElementById("message").innerText = await res.text();
 
-    // 👉 只呼叫 GAS，不讀任何回傳內容
-    await fetch(
-      `${WEB_APP_URL}?lineId=${encodeURIComponent(userId)}&station=${encodeURIComponent(station)}`
-    );
-
-    document.getElementById("message").innerText = "✅ 感應成功！";
-    document.getElementById("backBtn").style.display = "block";
-
-  } catch (err) {
+    setTimeout(() => liff.closeWindow(), 3000);
+  } catch (e) {
     document.getElementById("message").innerText = "系統錯誤，請重新操作";
-    console.error(err);
+    console.error(e);
   }
 }
-
 main();
 </script>
 
