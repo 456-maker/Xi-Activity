@@ -46,11 +46,6 @@ p {
   white-space: pre-wrap;
 }
 
-#hint {
-  margin-top: 20px;
-  font-size: 1.25em;
-  color: #999;
-}
 .back-box {
   margin-top: 36px;
   padding: 18px 12px;
@@ -80,7 +75,6 @@ p {
   <div>請點擊</div>
   <div>看看守護者說了什麼！</div>
 </div>
-  <div id="hint"></div>
 </div>
 
 <script>
@@ -129,8 +123,7 @@ async function main() {
       `${WEB_APP_URL}?lineId=${encodeURIComponent(userId)}&station=${encodeURIComponent(station)}`
     );
     const msg = await res.text();
-
-    document.getElementById("backToLine").addEventListener("click", () => {
+document.getElementById("backToLine").addEventListener("click", () => {
   if (liff.isInClient()) {
     liff.closeWindow(); // ✅ 回到 LINE OA 聊天室
   } else {
