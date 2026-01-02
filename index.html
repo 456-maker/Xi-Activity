@@ -116,8 +116,14 @@ async function main() {
       return;
     }
 
-    const profile = await liff.getProfile();
-    const userId = profile.userId;
+    document.getElementById("backToLine").addEventListener("click", () => {
+  if (liff.isInClient()) {
+    liff.closeWindow(); // ✅ 回到 LINE OA 聊天室
+  } else {
+    // 若不是在 LINE 裡打開（例如用瀏覽器）
+    window.location.href = "https://line.me";
+  }
+});
 
     const res = await fetch(
       `${WEB_APP_URL}?lineId=${encodeURIComponent(userId)}&station=${encodeURIComponent(station)}`
