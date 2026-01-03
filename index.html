@@ -99,10 +99,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const station = urlParams.get("station");
 
 if (!tasks[station]) {
-  document.getElementById("taskTitle").innerText = "感應錯誤";
-  document.getElementById("taskDesc").innerText = "請確認掃描的 NFC 是否正確。";
-  document.getElementById("message").innerText = "";
-} else {
+
   document.getElementById("taskTitle").innerText = tasks[station].title;
   document.getElementById("taskDesc").innerText = tasks[station].desc;
 }
