@@ -79,7 +79,7 @@ p {
 
 <script>
 const WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbzuQkTciSP74PnRm8fS86DIMeieCDH7l_eE4ZLf9YIEI36oK3yvmmC-_1q9T9FGii-y/exec";
+  "https://script.google.com/macros/s/AKfycby9HqSxM2Ex_i2jBaVHbOsiAk_TPwXfHjBMEIObROuJlXtTTrbJPuY7V4dRLNnRDO5k/exec";
 
 const LIFF_ID = "2008718308-nx2rhV48";
 
@@ -135,7 +135,10 @@ async function main() {
   }
 });
 
-  } 
+  } catch (err) {
+    document.getElementById("message").innerText = "系統錯誤，請重新操作";
+    console.error(err);
+  }
 }
 
 main();
